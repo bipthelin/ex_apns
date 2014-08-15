@@ -119,13 +119,13 @@ handle_call(_Request, _From, State) ->
 %% @hidden
 handle_cast({send, Token, Payload}, State) ->
   TokenInt = token_to_integer(Token),
-  PayloadBin = jsx:term_to_json(Payload),
+  PayloadBin = jsx:encode(Payload),
   Packet = [<<0, 32:16, TokenInt:256,
             (iolist_size(PayloadBin)):16>> | PayloadBin],
   send(Packet, State);
 handle_cast({send, Token, Payload, Expiry}, State = #state{next = Id}) ->
   TokenInt = token_to_integer(Token),
-  PayloadBin = jsx:term_to_json(Payload),
+  PayloadBin = jsx:encode(Payload),
   Packet = [<<1, Id:32, Expiry:32, 32:16, TokenInt:256,
               (iolist_size(PayloadBin)):16>> | PayloadBin],
   send(Packet, State#state{next = Id + 1});
